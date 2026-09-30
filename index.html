@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jassica, a little question 💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.3/confetti.browser.min.js"></script>
+<style>
+*{box-sizing:border-box}
+:root{--ink:#fff4f7;--mut:#ebc6d6;--rose:#ff5c8a;--pink:#ff9ec0;--gold:#ffd9a8;--glass:rgba(255,255,255,.1);--line:rgba(255,255,255,.24);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{height:100%;margin:0;background:#1a0818;color:var(--ink);font:400 16px/1.55 'DM Sans',system-ui,sans-serif;overflow:hidden;color-scheme:dark}
+.sky{position:fixed;inset:0;opacity:0;transition:opacity 1.8s;z-index:0}
+.s0{background:radial-gradient(120% 90% at 20% 0%,#7a2a5c,#2b0f2b 55%,#150716);opacity:1}
+.s1{background:linear-gradient(160deg,#ffb88c,#f77fa0 45%,#5b2a6b)}
+.s2{background:linear-gradient(160deg,#ff9a8b,#e0567a 50%,#3e2160)}
+.s3{background:linear-gradient(160deg,#ff6f61,#b83a7a 45%,#241247)}
+.s4{background:linear-gradient(160deg,#3a2a7a,#6a2a7a 45%,#0f0a2a)}
+.blob{position:fixed;width:46vmax;height:46vmax;border-radius:50%;filter:blur(80px);opacity:.35;z-index:1;animation:drift 20s ease-in-out infinite alternate;pointer-events:none}
+@keyframes drift{to{transform:translate(9vw,7vh) scale(1.25)}}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
+.stage{position:relative;z-index:3;height:100%;overflow-y:auto;display:flex;padding:20px}
+.wrap{margin:auto;width:min(560px,100%)}
+.dots{display:flex;gap:8px;justify-content:center;margin-bottom:18px}
+.dots i{width:8px;height:8px;border-radius:9px;background:rgba(255,255,255,.3);transition:.6s cubic-bezier(.3,1.5,.5,1)}
+.dots i.done{background:var(--pink)}.dots i.on{width:38px;background:linear-gradient(90deg,var(--rose),var(--gold))}
+.card{padding:36px 32px;border-radius:34px;background:linear-gradient(145deg,rgba(64,16,58,.62),rgba(38,10,44,.5));border:1px solid var(--line);backdrop-filter:blur(22px) saturate(140%);box-shadow:0 30px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.3);transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .3s}
+.card.flat{transform:none;backdrop-filter:none;background:rgba(50,14,50,.66)}
+.card.out{animation:out .33s ease-in forwards}
+@keyframes out{to{opacity:0;transform:translateY(-18px) scale(.96);filter:blur(10px)}}
+.card>*:not(h1):not(h2){animation:up .8s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms + 200ms)}
+@keyframes up{from{opacity:0;transform:translateY(22px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+@keyframes pop{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+h1,h2{font:500 clamp(31px,6.4vw,45px)/1.1 Fraunces,Georgia,serif;margin:0 0 12px;letter-spacing:-.01em}
+.w{display:inline-block;margin-right:.26em;animation:up 1s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--k)*95ms + 100ms)}
+.sub{color:var(--mut);margin:0 0 24px}
+.btn{font:600 16px 'DM Sans',sans-serif;border:0;border-radius:99px;padding:14px 30px;cursor:pointer;color:#fff;background:linear-gradient(135deg,#ff6b96,#c2417a);box-shadow:0 10px 30px rgba(255,92,138,.45);transition:transform .2s,box-shadow .2s,opacity .3s,scale .4s cubic-bezier(.3,1.6,.5,1)}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.95)}
+.btn:focus-visible,.opt:focus-visible,.day:focus-visible,.chip:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.btn[disabled]{opacity:.35;pointer-events:none;box-shadow:none}
+.ghost{background:var(--glass);border:1px solid var(--line);box-shadow:none}
+a.btn{display:inline-block;text-decoration:none;text-align:center}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,92,138,.6),0 10px 30px rgba(255,92,138,.45)}50%{box-shadow:0 0 0 20px rgba(255,92,138,0),0 10px 30px rgba(255,92,138,.45)}}
+#yes{scale:1}
+#no{transition:left .45s cubic-bezier(.2,1.3,.4,1),top .45s cubic-bezier(.2,1.3,.4,1),transform .2s;z-index:20}
+.no-slot{display:inline-block;visibility:hidden;pointer-events:none}
+body>#no{position:fixed!important;z-index:9999!important;pointer-events:auto}
+.row{display:flex;gap:18px;justify-content:center;align-items:center;flex-wrap:wrap;min-height:110px}
+.nav{display:flex;justify-content:space-between;gap:12px;margin-top:26px}
+.grid{display:grid;gap:12px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+.opt{position:relative;cursor:pointer;border:1px solid var(--line);background:var(--glass);border-radius:22px;padding:16px 8px;text-align:center;color:var(--ink);font:500 15px 'DM Sans',sans-serif;transition:.35s cubic-bezier(.3,1.5,.5,1)}
+.opt:hover{transform:translateY(-4px);background:rgba(255,255,255,.17)}
+.opt.sel{background:linear-gradient(135deg,rgba(255,92,138,.55),rgba(255,217,168,.35));border-color:#fff;transform:scale(1.05);box-shadow:0 12px 32px rgba(255,92,138,.4)}
+.opt.sel::after{content:"✓";position:absolute;top:7px;right:11px;font-size:13px}
+.opt b{display:block;font-size:30px;font-weight:400;line-height:1.3}
+.opt small{display:block;color:var(--mut);font-size:12px}
+.restaurant-opt{text-align:left;padding:17px 16px;min-height:138px}.restaurant-opt b{font-size:28px}.restaurant-opt strong{display:block;font-size:17px;line-height:1.25;margin:3px 0 6px}.restaurant-opt small{margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.chip{padding:9px 15px;border-radius:99px;border:1px solid var(--line);background:var(--glass);color:var(--ink);font:500 13px 'DM Sans',sans-serif;cursor:pointer;transition:.25s}
+.chip:hover{background:rgba(255,255,255,.22);transform:translateY(-2px)}
+.chips input,textarea{flex:1;min-width:170px;padding:10px 16px;border-radius:99px;border:1px solid var(--line);background:var(--glass);color:var(--ink);font:400 14px 'DM Sans',sans-serif}
+textarea{width:100%;border-radius:20px;resize:none;margin:14px 0}
+::placeholder{color:#d6a9bd}
+.cm{display:flex;justify-content:space-between;align-items:center;margin:4px 0 10px;font:500 24px Fraunces,serif}
+.cm button{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--glass);color:var(--ink);cursor:pointer;font-size:18px}
+.cm button:disabled{opacity:.25}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal span{font-size:12px;color:var(--mut)}
+.day{aspect-ratio:1;border-radius:50%;border:0;background:none;color:var(--ink);font:500 15px 'DM Sans',sans-serif;cursor:pointer;transition:.3s cubic-bezier(.3,1.5,.5,1)}
+.cal.a .day{animation:pop .5s both;animation-delay:calc(var(--d)*16ms)}
+.day:disabled{opacity:.22;cursor:default}
+.day:not(:disabled):hover{background:rgba(255,255,255,.2);transform:scale(1.15)}
+.day.today{box-shadow:inset 0 0 0 1px var(--gold)}
+.day.sel{background:linear-gradient(135deg,var(--rose),var(--gold));color:#3a0f2c;font-weight:600;transform:scale(1.14)}
+.pick{margin-top:12px;text-align:center;color:var(--gold);font-weight:500;min-height:26px}
+.big{font-size:clamp(88px,22vw,124px);text-align:center;line-height:1.1;transition:transform .35s cubic-bezier(.3,1.8,.5,1);filter:drop-shadow(0 12px 30px rgba(255,92,138,.5))}
+.num{text-align:center;font:500 42px Fraunces,serif;color:var(--gold)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:9px;background:linear-gradient(90deg,var(--rose) var(--p,66%),rgba(255,255,255,.2) var(--p,66%));margin:22px 0 6px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;border-radius:50%;background:#fff;border:7px solid var(--rose);box-shadow:0 6px 20px rgba(255,92,138,.6);cursor:grab}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:7px solid var(--rose);cursor:grab}
+.sum{display:flex;gap:14px;align-items:center;padding:14px 16px;border-radius:20px;background:var(--glass);border:1px solid var(--line);margin-bottom:10px}
+.sum i{font-style:normal;font-size:26px}.sum small{display:block;color:var(--gold);font-size:13px}
+.ctr{text-align:center}.ctr svg{display:block;margin:0 auto 10px}
+.hb{transform-origin:60px 60px;animation:beat 1.1s infinite}@keyframes beat{50%{transform:scale(1.4)}}
+.acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+@media(max-width:420px){.g3{grid-template-columns:1fr}.card{padding:28px 20px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style></head><body>
+<div class="sky s0"></div><div class="sky s1"></div><div class="sky s2"></div><div class="sky s3"></div><div class="sky s4"></div>
+<div class="blob" style="left:-10vmax;top:-10vmax;background:#ff6fa5"></div>
+<div class="blob" style="right:-12vmax;bottom:-8vmax;background:#ffb27a;animation-delay:-7s"></div>
+<div class="blob" style="left:32vw;top:38vh;background:#8a4bff;opacity:.2;animation-delay:-12s"></div>
+<canvas id="fx"></canvas>
+<main class="stage"><div class="wrap"><div class="dots" id="dots" role="progressbar" aria-valuemin="1" aria-valuemax="8"></div><section class="card flat" id="card"></section></div></main>
+<script>
+const $=s=>document.querySelector(s),card=$('#card'),dEl=$('#dots'),RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const PHONE=''; // your WhatsApp number with country code, e.g. '919876543210'
+const S={step:0,date:null,time:null,acts:[],other:'',restaurant:null,lvl:7,vy:new Date()};S.vy.setDate(1);
+const TIMES=[['☀️','Morning','9 AM – 12 PM',1,9],['🌤️','Afternoon','12 PM – 5 PM',2,12],['🌇','Evening','5 PM – 8 PM',3,17],['🌙','Night','8 PM onwards',4,20]];
+const ACTS=[['🎳','Bowling'],['🎬','Movie'],['🖼️','Museum'],['⛳','Mini Golf'],['🎮','Arcade'],['🏸','Badminton'],['🎱','Pool'],['🎨','Art Café'],['☕','Café Hopping'],['🍽️','Fine Dining'],['🌆','Evening Walk'],['🌅','Sunset View']];
+const RESTAURANTS=[
+['Chianti, Indiranagar','Indiranagar · 0.9 km','Italian · Pizza · Pasta'],
+['Harvest Salad Co','Indiranagar · 1.3 km','Salad · Healthy · Mediterranean'],
+['Burma Burma - Indiranagar','Indiranagar · 1.3 km','Burmese · Asian'],
+['Toit','Indiranagar · 1.9 km','Italian · European · Continental'],
+['Mūru Mūru','Indiranagar · 2.2 km','Cafe · Mexican · North Indian'],
+['Bologna','Indiranagar · 1.1 km','Italian · Pasta · Pizza'],
+['The Kind Roastery & Brew Room','Indiranagar · 1.2 km','Cafe · Coffee · Asian · Pizza'],
+['Milano Ice Cream','Indiranagar · 2.0 km','Ice Cream · Desserts'],
+['Rim Naam - The Oberoi','MG Road · 2.3 km','Thai · Asian · Seafood'],
+['Republic Of Noodles','Ulsoor · 3.5 km','Pan-Asian · Thai · Chinese'],
+["Fia's Lounge",'Richmond Road · 3.7 km','Parsi · Italian · European'],
+['The Konkan (Est. 2017)','St. Marks Road · 4.1 km','Konkani · Mangalorean · Seafood'],
+['Truffles','Koramangala · 4.0 km','Burger · Italian · Continental'],
+['Biergarten','Koramangala · 4.0 km','North Indian · Continental · BBQ'],
+['Kalpaney','Domlur · 4.8 km','South Indian · Asian'],
+["Daffy's Brewgarden",'Indiranagar · 5.1 km','South Indian · Bar Food'],
+['KOKO','Old Airport Road · 5.9 km','Asian · Sushi · Chinese · Japanese'],
+['Seta','Domlur · 6.1 km','Asian · Mediterranean'],
+['Sidewalk Cafe & Bar','Domlur','Cafe · Bar'],
+['Vembanad','Domlur','Kerala · Seafood']
+];
+let restaurantChoices=[];
+let lastRestaurantSignature='';
+function randomRestaurants(){
+  let shuffled=[...RESTAURANTS];
+  for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]}
+  let picks=shuffled.slice(0,3);
+  let signature=picks.map(r=>r[0]).sort().join('|');
+  if(signature===lastRestaurantSignature){
+    const swapIndex=3+Math.floor(Math.random()*(shuffled.length-3));
+    [shuffled[2],shuffled[swapIndex]]=[shuffled[swapIndex],shuffled[2]];
+    picks=shuffled.slice(0,3);
+    signature=picks.map(r=>r[0]).sort().join('|');
+  }
+  lastRestaurantSignature=signature;
+  restaurantChoices=picks.map(r=>({id:RESTAURANTS.indexOf(r),name:r[0],area:r[1],cuisine:r[2]}));
+}
+function restaurantCard(r){return `<button class="opt restaurant-opt${S.restaurant&&S.restaurant.id===r.id?' sel':''}" data-rid="${r.id}"><b>🍽️</b><strong>${r.name}</strong><small>${r.cuisine}</small><small>📍 ${r.area}</small></button>`;}
+const EM=['😐','🙂','🙂','😊','😊','😄','😄','🥰','😍','🤩'];
+const NO=['No 🙈','Are you sure? 🥺','Really? 😢','Think again 💭','Pretty please? 🥹','Last chance… 😳'];
+dEl.innerHTML='<i></i>'.repeat(8);
+const words=t=>t.split(' ').map((w,k)=>`<span class="w" style="--k:${k}">${w}</span>`).join('');
+const nav=(ok,l='Next')=>`<div class="nav"><button class="btn ghost" id="bk">Back</button><button class="btn" id="nx" ${ok?'':'disabled'}>${l}</button></div>`;
+const mood=i=>document.querySelectorAll('.sky').forEach((e,k)=>e.style.opacity=k==i?1:0);
+const go=n=>{
+ card.classList.add('out');
+ setTimeout(()=>{
+   const floating=document.querySelector('body>#no');
+   if(floating){
+     const oldRow=document.querySelector('#card .row');
+     if(oldRow)oldRow.appendChild(floating);
+     floating.style.position='';
+     floating.style.left='';
+     floating.style.top='';
+     floating.style.margin='';
+   }
+   document.getElementById('no-slot')?.remove();
+   S.step=n;
+   draw();
+ },330)
+};
+const fmt=d=>d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const actsTxt=()=>[...S.acts.map(i=>ACTS[i][0]+' '+ACTS[i][1]),...(S.other.trim()?['✨ '+S.other.trim()]:[])].join(', ');
+const addD=n=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+n);return d};
+const sat=w=>addD(((6-new Date().getDay()+7)%7||7)+w*7);
+let dodges=0;
+function dodge(e){
+ const b=$('#no'),y=$('#yes');
+ if(!b)return;
+ dodges++;
+
+ const r=b.getBoundingClientRect(),w=r.width,h=r.height;
+ const W=innerWidth,H=innerHeight;
+ const safe=24,gap=14;
+ const q=y.getBoundingClientRect();
+
+ // Keep an invisible same-size slot where No originally lived.
+ // This prevents the Yes button from re-centering in the flex row.
+ let slot=document.getElementById('no-slot');
+ if(!slot){
+   slot=document.createElement('span');
+   slot.id='no-slot';
+   slot.className='no-slot';
+   slot.style.width=w+'px';
+   slot.style.height=h+'px';
+   b.parentElement.insertBefore(slot,b);
+ }
+
+ // Move only No outside the transformed card. Fixed coordinates are then
+ // relative to the actual browser viewport.
+ if(b.parentElement!==document.body){
+   document.body.appendChild(b);
+   b.style.position='fixed';
+   b.style.margin='0';
+   b.style.left=r.left+'px';
+   b.style.top=r.top+'px';
+   b.offsetWidth;
+ }
+
+ const isFinalButton=dodges>=NO.length;
+
+ const px=Math.min(Math.max(r.left+w/2,safe+w/2),W-safe-w/2);
+ const py=Math.min(Math.max(r.top+h/2,safe+h/2),H-safe-h/2);
+ // Random displacement: up to 150px from the previous position
+ // (3x the original 50px range), while remaining inside the viewport.
+ // Real displacement: choose a DIFFERENT quadrant of the viewport
+ // for each escape, so the button can jump from Q4 -> Q1/Q2/Q3,
+ // rather than making another nearby move.
+ const candidates=[];
+ const centerX=W/2, centerY=H/2;
+
+ const currentQuadrant =
+   (px >= centerX ? 1 : 0) + (py >= centerY ? 2 : 0);
+
+ const otherQuadrants=[0,1,2,3].filter(q=>q!==currentQuadrant);
+
+ // Randomize the order so there is no predictable escape pattern.
+ otherQuadrants.sort(()=>Math.random()-.5);
+
+ for(let i=0;i<120;i++){
+   // Prefer one of the other three quadrants, with the first few
+   // candidates spread across different quadrants.
+   const q=otherQuadrants[i%otherQuadrants.length];
+
+   const left   = q%2===0 ? safe : centerX+8;
+   const right  = q%2===0 ? centerX-8 : W-w-safe;
+   const top    = q<2     ? safe : centerY+8;
+   const bottom = q<2     ? centerY-8 : H-h-safe;
+
+   if(right<=left || bottom<=top) continue;
+
+   candidates.push({
+     x:left+Math.random()*(right-left),
+     y:top+Math.random()*(bottom-top)
+   });
+ }
+
+ // Also include deliberately far cross-screen jumps.
+ [
+   [safe,safe],
+   [W-w-safe,safe],
+   [safe,H-h-safe],
+   [W-w-safe,H-h-safe]
+ ].forEach(([x,y])=>{
+   const q=(x+w/2>=centerX?1:0)+(y+h/2>=centerY?2:0);
+   if(q!==currentQuadrant) candidates.push({x,y});
+ });
+
+ const intersects=(a,b,pad=0)=>
+   a.x < b.right+pad && a.x+a.w > b.left-pad &&
+   a.y < b.bottom+pad && a.y+a.h > b.top-pad;
+
+ const textRects=[...document.querySelectorAll(
+   '#card h1,#card h2,#card .sub,#card .dots,#card .nav'
+ )].map(el=>el.getBoundingClientRect());
+
+ let chosen=null;
+ for(const c of candidates){
+   const x=Math.max(safe,Math.min(W-w-safe,c.x));
+   const t=Math.max(safe,Math.min(H-h-safe,c.y));
+   const box={x,y:t,w,h,left:x,right:x+w,top:t,bottom:t+h};
+
+   if(!intersects(box,q,gap) &&
+      !textRects.some(rect=>intersects(box,rect,10)) &&
+      Math.hypot(x+w/2-(e?.clientX??px),t+h/2-(e?.clientY??py))>=35){
+     chosen={x,t};
+     break;
+   }
+ }
+
+ if(!chosen){
+   const spots=[
+     [safe,safe],[W-w-safe,safe],
+     [safe,H-h-safe],[W-w-safe,H-h-safe]
+   ];
+   chosen=spots
+     .map(([x,t])=>({x,t}))
+     .find(c=>!intersects({
+       x:c.x,y:c.t,w,h,left:c.x,right:c.x+w,top:c.t,bottom:c.t+h
+     },q,gap)) || {x:safe,t:safe};
+ }
+
+ b.style.left=chosen.x+'px';
+ b.style.top=chosen.t+'px';
+ b.textContent=isFinalButton ? 'Okay fine… Yes? 🫣' : NO[dodges];
+}
+const V=[
+ ()=>`<h1>${words('Jassica, will you go on a date with me?')}</h1><p class="sub">Take your time… though one of these buttons might be a little shy.</p><div class="row"><button class="btn pulse" id="yes">Yes ❤️</button><button class="btn ghost" id="no">${NO[0]}</button></div>`,
+ ()=>`<h2>${words('Which day would you like to go on our date?')}</h2><p class="sub">Any day that feels right — I’m free when you are.</p><div class="chips"><button class="chip" data-q="1">Tomorrow</button><button class="chip" data-q="s0">This Saturday</button><button class="chip" data-q="s1">Next Saturday</button><button class="chip" data-q="r">Surprise me 🎲</button></div><div id="calw"></div><div class="pick" id="pk"></div>${nav(!!S.date)}`,
+ ()=>`<h2>${words('What time works best for you?')}</h2><p class="sub">Morning coffee or a night under the lights — your call.</p><div class="grid g2">${TIMES.map((t,i)=>`<button class="opt${S.time===i?' sel':''}" data-i="${i}"><b>${t[0]}</b>${t[1]}<small>${t[2]}</small></button>`).join('')}</div>${nav(S.time!=null)}`,
+ ()=>`<h2>${words('What would you enjoy doing together?')}</h2><p class="sub">Pick as many as you like — we’ll make a perfect mix. <span id="ct"></span></p><div class="grid g3">${ACTS.map((a,i)=>`<button class="opt${S.acts.includes(i)?' sel':''}" data-i="${i}"><b>${a[0]}</b>${a[1]}</button>`).join('')}</div><div class="chips" style="margin-top:14px"><button class="chip" id="sp">Surprise me 🎁</button><input id="oth" placeholder="Or suggest your own idea…" aria-label="Your own idea"></div>${nav(0)}`,
+ ()=>`<h2>${words('Where should we go to eat? 🍽️')}</h2><p class="sub">Pick one from these three, or let me surprise you with another set.</p><div class="grid g3" id="restaurantGrid"></div><div class="acts" style="margin-top:16px"><button class="btn ghost" id="reroll">🎲 Random place</button></div><div class="chips" style="margin-top:14px"><input id="restaurantOther" placeholder="Or type a place you’re thinking of…" aria-label="Restaurant name"></div><div class="pick" id="restaurantPick"></div>${nav(!!S.restaurant)}`,
+ ()=>`<h2>${words('How excited are you?')}</h2><p class="sub">Slide to match the butterflies. 🦋</p><div class="big" id="bg"></div><div class="num" id="nu"></div><input type="range" id="rg" min="1" max="10" value="${S.lvl}" aria-label="Excitement from 1 to 10">${nav(1)}`,
+ ()=>`<h2>${words('So… it’s a date? ❤️')}</h2><p class="sub">Here’s everything you chose — look good?</p>${[['🗓️','Date',fmt(S.date)],['🕰️','Time',TIMES[S.time][1]+' · '+TIMES[S.time][2]],['🎈','Activities',actsTxt()||'Surprise me'],['🍽️','Restaurant',S.restaurant?.name||'Surprise me'],[EM[S.lvl-1],'Excitement',S.lvl+' / 10']].map(r=>`<div class="sum"><i>${r[0]}</i><div><small>${r[1]}</small>${r[2]}</div></div>`).join('')}${nav(1,'Confirm 💞')}`,
+ ()=>`<div class="ctr"><svg viewBox="0 0 120 90" width="130" aria-hidden="true"><g fill="#ff8fb4"><circle cx="40" cy="22" r="11"/><path d="M22 80a18 18 0 0 1 36 0z"/></g><g fill="#ffd9a8"><circle cx="80" cy="22" r="11"/><path d="M62 80a18 18 0 0 1 36 0z"/></g><path class="hb" d="M60 52c-6-8-16 0-8 8l8 7 8-7c8-8-2-16-8-8z" fill="#fff"/></svg></div><h1 class="ctr">${words('Yay!! I can’t wait for our date&nbsp;❤️')}</h1><p class="sub ctr">You just made this so special. See you soon, Jassica — it’s going to be wonderful.</p><textarea id="nt" rows="2" placeholder="Anything you’d like me to know? (optional)" aria-label="Note"></textarea><div class="acts"><a class="btn" id="wa" target="_blank" rel="noopener">Tell him 💌</a><a class="btn ghost" id="gc" target="_blank" rel="noopener">Add to calendar 🗓️</a></div>`];
+function calHTML(a){const v=S.vy,y=v.getFullYear(),m=v.getMonth(),f=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate(),t0=addD(0),cur=new Date(t0.getFullYear(),t0.getMonth(),1);
+ let h=['Su','Mo','Tu','We','Th','Fr','Sa'].map(d=>`<span>${d}</span>`).join('')+'<i></i>'.repeat(f);
+ for(let d=1;d<=n;d++){const dt=new Date(y,m,d);h+=`<button class="day${S.date&&+S.date==+dt?' sel':''}${+dt==+t0?' today':''}" style="--d:${d}" data-d="${+dt}" ${dt>=t0?'':'disabled'}>${d}</button>`}
+ return `<div class="cm"><button id="pm" aria-label="Previous month" ${+v<=+cur?'disabled':''}>‹</button><span>${v.toLocaleString('en',{month:'long'})} ${y}</span><button id="nm" aria-label="Next month">›</button></div><div class="cal${a?' a':''}">${h}</div>`}
+function rc(a){$('#calw').innerHTML=calHTML(a);const mv=k=>()=>{S.vy=new Date(S.vy.getFullYear(),S.vy.getMonth()+k,1);rc(1)};$('#pm').onclick=mv(-1);$('#nm').onclick=mv(1);
+ document.querySelectorAll('.day').forEach(b=>b.onclick=()=>pick(new Date(+b.dataset.d)));$('#pk').textContent=S.date?'💗 '+fmt(S.date):'';$('#nx').disabled=!S.date}
+function pick(d){S.date=d;S.vy=new Date(d.getFullYear(),d.getMonth(),1);rc(0)}
+const B=[
+ ()=>{dodges=0;const b=$('#no');const row=b?.closest('.row');const cleanupNo=()=>{const floating=document.querySelector('body>#no');if(floating){if(row)row.appendChild(floating);floating.style.position='';floating.style.left='';floating.style.top='';floating.style.margin='';}document.getElementById('no-slot')?.remove()};cleanupNo();$('#yes').onclick=e=>{const r=e.currentTarget.getBoundingClientRect();burst(r.left+r.width/2,r.top,28);go(1)};b.onpointerenter=b.onpointerdown=e=>{if(dodges<=NO.length){e.preventDefault();dodge(e)}};b.onclick=e=>dodges<NO.length?dodge(e):go(1)},
+ ()=>{const q={1:()=>addD(1),s0:()=>sat(0),s1:()=>sat(1),r:()=>addD(1+Math.random()*13|0)};document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>pick(q[b.dataset.q]()));rc(1)},
+ ()=>document.querySelectorAll('.opt').forEach(b=>b.onclick=e=>{S.time=+b.dataset.i;mood(TIMES[S.time][3]);document.querySelectorAll('.opt').forEach(o=>o.classList.toggle('sel',o==b));$('#nx').disabled=false;const r=b.getBoundingClientRect();burst(r.left+r.width/2,r.top+20,8)}),
+ ()=>{const o=$('#oth'),os=[...document.querySelectorAll('.opt')];o.value=S.other;const u=()=>{os.forEach((b,i)=>b.classList.toggle('sel',S.acts.includes(i)));$('#ct').textContent=S.acts.length?`(${S.acts.length} picked)`:'';$('#nx').disabled=!(S.acts.length||S.other.trim())};os.forEach((b,i)=>b.onclick=()=>{S.acts=S.acts.includes(i)?S.acts.filter(x=>x!=i):[...S.acts,i];u();const r=b.getBoundingClientRect();burst(r.left+r.width/2,r.top+20,5)});$('#sp').onclick=()=>{S.acts=[...ACTS.keys()].sort(()=>Math.random()-.5).slice(0,3);u()};o.oninput=()=>{S.other=o.value;u()};u()},
+ ()=>{
+   const render=()=>{ $('#restaurantGrid').innerHTML=restaurantChoices.map(restaurantCard).join(''); document.querySelectorAll('.restaurant-opt').forEach(b=>b.onclick=()=>{const r=RESTAURANTS[+b.dataset.rid];S.restaurant={id:+b.dataset.rid,name:r[0],area:r[1],cuisine:r[2]};$('#restaurantOther').value='';$('#restaurantPick').textContent='💗 '+r[0];document.querySelectorAll('.restaurant-opt').forEach(x=>x.classList.toggle('sel',x===b));$('#nx').disabled=false;const q=b.getBoundingClientRect();burst(q.left+q.width/2,q.top+20,8)})};
+   randomRestaurants();render();$('#reroll').onclick=()=>{randomRestaurants();render()};
+   const o=$('#restaurantOther');o.oninput=()=>{const v=o.value.trim();if(v){S.restaurant={id:null,name:v,area:'Your suggestion',cuisine:'Manually added'};$('#restaurantPick').textContent='💗 '+v;document.querySelectorAll('.restaurant-opt').forEach(x=>x.classList.remove('sel'));$('#nx').disabled=false}else{S.restaurant=null;$('#restaurantPick').textContent='';$('#nx').disabled=true}};if(S.restaurant){$('#restaurantPick').textContent='💗 '+S.restaurant.name;$('#nx').disabled=false}
+ },
+ ()=>{const r=$('#rg'),f=()=>{const v=S.lvl=+r.value;$('#bg').textContent=EM[v-1];$('#nu').textContent=v;$('#bg').style.transform=`scale(${.8+v*.05}) rotate(${(v-5)*2}deg)`;r.style.setProperty('--p',(v-1)/9*100+'%');navigator.vibrate&&navigator.vibrate(6);if(v==10){const q=r.getBoundingClientRect();burst(q.right-16,q.top+8,24)}};r.oninput=f;f()},
+ ()=>{$('#nx').onclick=()=>{party();go(7)}},
+ ()=>{const n=$('#nt'),p=x=>String(x).padStart(2,'0'),d=S.date,h=TIMES[S.time][4],ymd=''+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate());const u=()=>{const t=`Yes! 💌 ${fmt(d)} · ${TIMES[S.time][1]} · ${actsTxt()||'surprise me'} · ${S.restaurant?.name||'surprise me'} · excitement ${S.lvl}/10${n.value.trim()?' — '+n.value.trim():''}`;$('#wa').href=`https://wa.me/${PHONE}?text=${encodeURIComponent(t)}`;$('#gc').href=`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Our date 💞')}&dates=${ymd}T${p(h)}0000/${ymd}T${p(h+3)}0000&details=${encodeURIComponent((actsTxt()||'')+' · '+(S.restaurant?.name||'Restaurant TBD'))}`};n.oninput=u;u();setTimeout(()=>burst(innerWidth/2,innerHeight/2,30),700)}
+];
+function draw(){const s=S.step;card.className='card'+(s?'':' flat');mood(S.time==null?0:TIMES[S.time][3]);
+ [...dEl.children].forEach((d,i)=>d.className=s>5||i<s?'done':i==s?'on':'');dEl.setAttribute('aria-valuenow',Math.min(s+1,6));
+ card.innerHTML=V[s]();[...card.children].forEach((e,i)=>e.style.setProperty('--i',i));
+ $('#bk')&&($('#bk').onclick=()=>go(Math.max(0,s-1)));$('#nx')&&($('#nx').onclick=()=>go(s+1));B[s]()}
+function party(){if(!window.confetti||RM)return;const c=['#ff7fa8','#ffd9a8','#fff','#ff5c8a'];let sh;try{sh=confetti.shapeFromText({text:'💗',scalar:2})}catch(e){}
+ const end=Date.now()+3500,o={particleCount:5,spread:65,colors:c,scalar:1.4,shapes:sh?['circle','square',sh]:['circle','square']};
+ (function f(){confetti({...o,angle:60,origin:{x:0,y:.7}});confetti({...o,angle:120,origin:{x:1,y:.7}});if(Date.now()<end)requestAnimationFrame(f)})();
+ confetti({particleCount:150,spread:120,origin:{y:.5},colors:c})}
+const cv=$('#fx'),cx=cv.getContext('2d'),dpr=Math.min(devicePixelRatio||1,2),HT=[],BF=[],SP=[];let W,H,t=0;
+const rs=()=>{W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0)};rs();addEventListener('resize',rs);
+const rnd=(a,b)=>a+Math.random()*(b-a);
+for(let i=0;i<24;i++)HT.push({x:rnd(0,W),y:rnd(0,H),s:rnd(10,26),v:rnd(.25,.8),ph:rnd(0,6.3),a:rnd(.15,.38)});
+function burst(x,y,n){if(RM)return;for(let i=0;i<n;i++){const a=rnd(0,6.28),v=rnd(2,7);SP.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-3,l:1,s:rnd(14,26),ch:'💗'})}}
+addEventListener('pointermove',e=>{if(RM)return;if(Math.random()<.5)SP.push({x:e.clientX,y:e.clientY,vx:rnd(-.6,.6),vy:rnd(-1,0),l:.9,s:rnd(3,6)});
+ if(e.pointerType=='mouse'){card.style.setProperty('--rx',(e.clientY/H-.5)*-5+'deg');card.style.setProperty('--ry',(e.clientX/W-.5)*5+'deg')}});
+function loop(){t+=.016;cx.clearRect(0,0,W,H);
+ HT.forEach(h=>{h.y-=h.v;h.x+=Math.sin(t+h.ph)*.4;if(h.y<-30){h.y=H+30;h.x=rnd(0,W)}cx.globalAlpha=h.a;cx.fillStyle='#ff9ec0';cx.font=h.s+'px serif';cx.fillText('♥',h.x,h.y)});
+ const tg=S.step==5?S.lvl:0;if(BF.length<tg){if(Math.random()<.2)BF.push({ph:rnd(0,9),sp:rnd(.4,.9)})}else if(BF.length>tg)BF.pop();
+ if(S.step==5)BF.forEach(b=>{cx.save();cx.translate(W/2+Math.sin(t*b.sp+b.ph)*W*.4,H/2+Math.cos(t*b.sp*1.3+b.ph)*H*.35);cx.scale(Math.abs(Math.sin(t*9+b.ph))*.6+.4,1);cx.globalAlpha=.9;cx.font='30px serif';cx.textAlign='center';cx.fillText('🦋',0,0);cx.restore()});
+ for(let i=SP.length-1;i>=0;i--){const p=SP[i];p.x+=p.vx;p.y+=p.vy;p.vy+=p.ch?.15:.02;p.l-=p.ch?.016:.03;if(p.l<=0){SP.splice(i,1);continue}
+  cx.globalAlpha=p.l;if(p.ch){cx.font=p.s+'px serif';cx.fillText(p.ch,p.x,p.y)}else{cx.fillStyle='#ffe2b8';cx.beginPath();cx.arc(p.x,p.y,p.s/2,0,6.3);cx.fill()}}
+ cx.globalAlpha=1;requestAnimationFrame(loop)}
+if(!RM)loop();
+draw();
+</script></body></html>
